@@ -1,8 +1,8 @@
-const User = require("../models/user");
+const Book = require("../models/book");
 
-const getUsers = (req, res) => {
-  User.find({})
-    .then((user) => {
+const getAllBooks = (req, res) => {
+  Book.find({})
+    .then((book) => {
       res.status(200).send(user);
     })
     .catch((e) => {
