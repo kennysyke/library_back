@@ -1,3 +1,4 @@
+const { response, request } = require("express");
 const User = require("../models/user");
 
 const getUsers = (req, res) => {
@@ -20,8 +21,7 @@ const getUser = (req, res) => {
     });
 };
 const createUser = (req, res) => {
-  const data = req.body;
-  User.create(data)
+  return User.create({ ...req.body })
     .then((user) => {
       res.status(201).send(user);
     })
@@ -51,10 +51,34 @@ const deleteUser = (req, res) => {
     });
 };
 
+const borrowBook = async (req, res) => {
+  const { user_id, book_id } = req.params;
+  User.findByIdAndUpdate(
+    user_id,
+    { $addToSet: { books: book_id } },
+    { new: true }
+  )
+    .then((user) => res.status(200).send(user))
+    .catch((e) => {
+      res.status(500).send(e.message);
+    });
+};
+
+const returnBook = async (req, res) => {
+  const { user_id, book_id } = req.params;
+  User.findByIdAndUpdate(user_id, { $pull: { books: book_id } }, { new: true })
+    .then((user) => res.status(200).send(user))
+    .catch((e) => {
+      res.status(500).send(e.message);
+    });
+};
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
   updateUser,
   deleteUser,
+  borrowBook,
+  returnBook,
 };
